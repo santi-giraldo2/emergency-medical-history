@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#15324e" />
+    <meta
+      name="description"
+      content="Ficha médica de emergencia personal. Alergias críticas, medicamentos, enfermedades de base y contactos."
+    />
+    <title>Ficha Médica de Emergencia</title>
+
+    <!-- ============================================================
+       FICHA MÉDICA DE EMERGENCIA — Archivo único (HTML+CSS+JS)
+       Sin dependencias externas · Funciona offline · Mobile-first
+       Instrucciones de despliegue al final del archivo.
+       ============================================================ -->
+
+    <style>
+      /* ===================== VARIABLES / PALETA MÉDICA ===================== */
+      :root {
+        --bg: #f4f6f9;
+        --surface: #ffffff;
+        --navy: #15324e; /* azul oscuro (header / títulos) */
+        --navy-2: #1d4060;
+        --text: #16222e;
+        --text-muted: #5e6b78;
+        --line: #dde3ea;
+
+        /* Alertas */
+        --banner: #c2402e; /* banner rojo de advertencia */
+        --critical: #6e1423; /* casi fatal */
+        --danger: #c0392b; /* grave / acento alergias */
+        --danger-bg: #fdecea;
+        --orange: #d98324; /* moderada / suspendido */
+        --olive: #9b8f2d; /* leve */
+
+        /* Seguro / medicamentos */
+        --green: #1f7a44;
+        --green-accent: #2e9e5b;
+        --green-bg: #e9f6ec;
+
+        --coral: #ff8b7a; /* tipo de sangre */
+
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 3px rgba(21, 50, 78, 0.1);
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      /* ===================== RESET ===================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 17px;
+        line-height: 1.5;
+        padding-bottom: calc(28px + var(--safe-bottom));
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      p {
+        margin: 0;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 18px;
+      }
+
+      /* ===================== HEADER PACIENTE ===================== */
+      header.topbar {
+        background: var(--navy);
+        color: #fff;
+        padding: 20px 0;
+      }
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .topbar .eyebrow {
+        font-size: 12.5px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 700;
+        opacity: 0.72;
+      }
+      .topbar h1 {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-top: 4px;
+      }
+      .blood-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1.5px solid rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .blood-pill .drop {
+        font-size: 16px;
+        line-height: 1;
+      }
+      .blood-pill b {
+        color: var(--coral);
+        font-size: 18px;
+      }
+
+      /* ===================== BANNER FIJO ===================== */
+      .alert-banner {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--banner);
+        color: #fff;
+        text-align: center;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        padding: 13px 14px;
+        font-size: 16px;
+        line-height: 1.3;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+      }
+      .alert-banner .ico {
+        font-size: 19px;
+        line-height: 1;
+      }
+
+      /* ===================== SECCIONES / TÍTULOS ===================== */
+      main {
+        padding-top: 22px;
+      }
+      section {
+        margin-top: 26px;
+      }
+      .sec-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 23px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0 2px 14px;
+      }
+      .sec-title .bar {
+        width: 7px;
+        height: 26px;
+        border-radius: 6px;
+        background: var(--navy);
+        flex: 0 0 auto;
+      }
+      .sec-title.crit .bar {
+        background: var(--danger);
+      }
+      .sec-title.safe .bar {
+        background: var(--green-accent);
+      }
+
+      /* ===================== GRID 2 COLUMNAS (mobile-first) ===================== */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      @media (min-width: 720px) {
+        .grid-2 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* ===================== ALERGIAS ===================== */
+      .allergy {
+        background: var(--danger-bg);
+        border: 1px solid #f3cfc9;
+        border-left: 6px solid var(--danger);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+      }
+      .allergy.sev-mortal {
+        border-left-color: var(--critical);
+      }
+      .allergy.sev-leve {
+        border-left-color: var(--olive);
+      }
+      .al-head {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 7px;
+      }
+      .al-ico {
+        font-size: 19px;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+      .al-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--danger);
+        line-height: 1.2;
+      }
+      .al-react {
+        color: var(--text);
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+      .badge {
+        align-self: flex-start;
+        margin-top: auto;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 6px 13px;
+        border-radius: 999px;
+        color: #fff;
+        white-space: nowrap;
+      }
+      .badge.mortal {
+        background: var(--critical);
+      }
+      .badge.grave {
+        background: var(--danger);
+      }
+      .badge.moderada {
+        background: var(--orange);
+      }
+      .badge.leve {
+        background: var(--olive);
+      }
+      .badge.mortal {
+        animation: pulse-badge 1.8s ease-in-out infinite;
+      }
+      @keyframes pulse-badge {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(110, 20, 35, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 0 7px rgba(110, 20, 35, 0);
+        }
+      }
+
+      /* ===================== MEDICAMENTOS ===================== */
+      .med {
+        background: var(--green-bg);
+        border: 1px solid #bfe3c7;
+        border-left: 6px solid var(--green-accent);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+      }
+      .med-head {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .med-ico {
+        font-size: 19px;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+      .med-name {
+        font-size: 19px;
+        font-weight: 800;
+        color: var(--green);
+        line-height: 1.2;
+      }
+      .med-dose {
+        color: var(--text);
+        font-size: 16px;
+        margin-top: 5px;
+        padding-left: 28px;
+      }
+
+      /* ===================== ACORDEÓN (details/summary, sin JS) ===================== */
+      details.acc {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      details.acc > summary {
+        list-style: none;
+        cursor: pointer;
+        user-select: none;
+        padding: 16px 18px;
+        font-weight: 800;
+        font-size: 17px;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      details.acc > summary::-webkit-details-marker {
+        display: none;
+      }
+      .sum-txt {
+        flex: 1;
+      }
+      .chev {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
+        color: var(--text-muted);
+        transition: transform 0.2s ease;
+      }
+      details.acc[open] > summary .chev {
+        transform: rotate(180deg);
+      }
+      details.acc[open] > summary {
+        border-bottom: 1px solid var(--line);
+      }
+      .acc-body {
+        padding: 6px 18px 16px;
+      }
+
+      .sys-group {
+        padding-top: 14px;
+      }
+      .sys-group:first-child {
+        padding-top: 6px;
+      }
+      .sys-name {
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--navy-2);
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--line);
+      }
+      .disease {
+        padding: 11px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .sys-group .disease:last-child {
+        border-bottom: none;
+      }
+      .disease .dname {
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 16.5px;
+      }
+      .disease .ddesc {
+        color: var(--text-muted);
+        font-size: 15px;
+        margin-top: 3px;
+      }
+      .disease .flag {
+        display: inline-block;
+        margin-top: 7px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--danger);
+        background: var(--danger-bg);
+        padding: 4px 9px;
+        border-radius: 7px;
+      }
+
+      /* ===================== LÍNEA DE TIEMPO ===================== */
+      .timeline {
+        position: relative;
+        margin: 6px 0 2px;
+        padding-left: 26px;
+      }
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        background: linear-gradient(var(--navy-2), var(--line));
+        border-radius: 3px;
+      }
+      .tl-item {
+        position: relative;
+        padding: 0 0 20px;
+      }
+      .tl-item:last-child {
+        padding-bottom: 4px;
+      }
+      .tl-item::before {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--navy-2);
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px var(--navy-2);
+      }
+      .tl-when {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--navy-2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .tl-title {
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 16px;
+        margin-top: 1px;
+      }
+      .tl-desc {
+        color: var(--text-muted);
+        font-size: 15px;
+        margin-top: 2px;
+      }
+
+      /* ===================== CONTACTOS ===================== */
+      .contact {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px 18px;
+      }
+      .contact .c-name {
+        font-weight: 800;
+        font-size: 18px;
+        color: var(--navy);
+      }
+      .contact .c-rel {
+        color: var(--text-muted);
+        font-size: 14.5px;
+        margin-bottom: 12px;
+      }
+      .contact .c-phone {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--navy-2);
+        margin: 0 0 8px;
+      }
+      .contact .c-phone .tag {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 3px 9px;
+      }
+      .c-actions + .c-phone {
+        margin-top: 16px;
+      }
+      .c-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .c-actions a {
+        flex: 1;
+        text-decoration: none;
+        text-align: center;
+        padding: 12px 8px;
+        border-radius: var(--radius-sm);
+        font-weight: 800;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+      }
+      .btn-call {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-wa {
+        background: #25d366;
+        color: #06351d;
+      }
+      .c-actions svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+      }
+
+      /* ===================== UTILIDADES / FOOTER ===================== */
+      .tools {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 26px 0 2px;
+        flex-wrap: wrap;
+      }
+      .tool-btn {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        color: var(--navy);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+      footer.note {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 13px;
+        margin: 22px 0 6px;
+        line-height: 1.6;
+      }
+      footer.note .upd {
+        font-weight: 700;
+        color: var(--navy-2);
+      }
+
+      @media (min-width: 640px) {
+        body {
+          font-size: 18px;
+        }
+      }
+
+      /* ===================== IMPRESIÓN / PDF ===================== */
+      @media print {
+        :root {
+          --bg: #fff;
+        }
+        body {
+          padding: 0;
+          font-size: 12pt;
+        }
+        .alert-banner {
+          position: static;
+        }
+        .tools {
+          display: none !important;
+        }
+        details.acc {
+          box-shadow: none;
+          border: 1px solid #999;
+        }
+        .chev {
+          display: none;
+        }
+        details.acc > summary {
+          cursor: default;
+        }
+        .allergy,
+        .med,
+        .contact {
+          box-shadow: none;
+        }
+        .badge.mortal {
+          animation: none;
+        }
+        section,
+        .allergy,
+        .med,
+        details.acc,
+        .contact {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===================== HEADER PACIENTE ===================== -->
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <div>
+          <div class="eyebrow">Ficha médica de emergencia</div>
+          <!-- EDITAR: nombre del paciente -->
+          <h1>Isabella Marín Perez</h1>
+        </div>
+        <div class="blood-pill" title="Tipo de sangre">
+          <span class="drop" aria-hidden="true">🩸</span> Sangre: <b>B+</b>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== BANNER FIJO ===================== -->
+    <div class="alert-banner" role="alert">
+      <span class="ico" aria-hidden="true">⚠️</span>
+      <span>LEER ANTES DE ADMINISTRAR CUALQUIER MEDICAMENTO</span>
+    </div>
+
+    <main class="wrap">
+      <!-- ===================== ALERGIAS CRÍTICAS ===================== -->
+      <!-- Ordenadas por gravedad: lo más mortal primero. -->
+      <section id="alergias" aria-labelledby="t-alergias">
+        <h2 class="sec-title crit" id="t-alergias">
+          <span class="bar"></span>Alergias críticas
+        </h2>
+
+        <div class="grid-2">
+          <article class="allergy sev-mortal">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Hierro sacaroso</h3>
+            </div>
+            <p class="al-react">
+              Reacción casi fatal: colapso sistémico, cierre de garganta,
+              inflamación de todas las articulaciones, cuadro de casi infarto.
+            </p>
+            <span class="badge mortal">Casi fatal</span>
+          </article>
+
+          <article class="allergy">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Piperacilina-tazobactam (Pipetazo)</h3>
+            </div>
+            <p class="al-react">
+              Urticaria, dolor en pecho y brazos, cierre de garganta.
+            </p>
+            <span class="badge grave">Grave</span>
+          </article>
+
+          <article class="allergy">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Amikacina</h3>
+            </div>
+            <p class="al-react">Cierre de garganta, dolor en pecho y brazos.</p>
+            <span class="badge grave">Grave</span>
+          </article>
+
+          <article class="allergy">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Dipirona compuesta / Hioscina</h3>
+            </div>
+            <p class="al-react">
+              Picazón intensa (especialmente en cabeza), urticaria, dificultad
+              respiratoria.
+            </p>
+            <span class="badge grave">Grave</span>
+          </article>
+
+          <article class="allergy">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Morfina</h3>
+            </div>
+            <p class="al-react">
+              Migrañas, hipertensión, sensación de calor extremo en la cabeza.
+            </p>
+            <span class="badge moderada">Moderada</span>
+          </article>
+
+          <article class="allergy">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Tramadol</h3>
+            </div>
+            <p class="al-react">
+              Suspendido — reacción adversa con sospecha de convulsión inducida.
+            </p>
+            <span class="badge moderada">Suspendido</span>
+          </article>
+
+          <article class="allergy">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Plasil (Metoclopramida)</h3>
+            </div>
+            <p class="al-react">
+              Acatisia (inquietud motora intensa, incapacidad de permanecer
+              quieto/a).
+            </p>
+            <span class="badge moderada">Moderada</span>
+          </article>
+
+          <article class="allergy sev-leve">
+            <div class="al-head">
+              <span class="al-ico" aria-hidden="true">⚠️</span>
+              <h3 class="al-name">Jabón Clorhexidina rosado</h3>
+            </div>
+            <p class="al-react">
+              Sarpullido en zona íntima (especialmente con la presentación
+              rosada).
+            </p>
+            <span class="badge leve">Leve</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== MEDICAMENTOS ACTUALES ===================== -->
+      <section id="medicamentos" aria-labelledby="t-meds">
+        <h2 class="sec-title safe" id="t-meds">
+          <span class="bar"></span>Medicamentos actuales
+        </h2>
+
+        <div class="grid-2">
+          <article class="med">
+            <div class="med-head">
+              <span class="med-ico" aria-hidden="true">💊</span>
+              <h3 class="med-name">Parches de Buprenorfina 40 mg</h3>
+            </div>
+            <p class="med-dose">70 mcg/h</p>
+          </article>
+
+          <article class="med">
+            <div class="med-head">
+              <span class="med-ico" aria-hidden="true">💊</span>
+              <h3 class="med-name">Pregabalina 600 mg/día</h3>
+            </div>
+            <p class="med-dose">Dosis distribuida durante el día</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== ENFERMEDADES DE BASE ===================== -->
+      <section id="enfermedades" aria-labelledby="t-enf">
+        <h2 class="sec-title" id="t-enf">
+          <span class="bar"></span>Enfermedades de base
+        </h2>
+
+        <details class="acc">
+          <summary>
+            <span class="sum-txt">Ver enfermedades de base por sistema</span>
+            <svg
+              class="chev"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </summary>
+          <div class="acc-body">
+            <div class="sys-group">
+              <div class="sys-name">Sistema nervioso y columna</div>
+              <div class="disease">
+                <div class="dname">Espina bífida oculta</div>
+                <div class="ddesc">
+                  Defecto congénito leve del cierre de la columna, sin
+                  exposición de la médula. Relevante para anestesia neuroaxial
+                  (epidural / raquídea).
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Disautonomía</div>
+                <div class="ddesc">
+                  Disfunción del sistema nervioso autónomo: altera el control de
+                  presión arterial, frecuencia cardíaca y temperatura.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Daño neuropático secundario a cirugías</div>
+                <div class="ddesc">
+                  Lesión nerviosa derivada de múltiples intervenciones;
+                  principal contribuyente al dolor crónico.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Dolor crónico</div>
+                <div class="ddesc">
+                  Dolor persistente, manejado con buprenorfina y pregabalina
+                  (ver medicamentos actuales).
+                </div>
+              </div>
+            </div>
+
+            <div class="sys-group">
+              <div class="sys-name">Sistema digestivo</div>
+              <div class="disease">
+                <div class="dname">
+                  Megacolon aganglionar (Enfermedad de Hirschsprung)
+                </div>
+                <div class="ddesc">
+                  Ausencia congénita de células nerviosas en el colon que impide
+                  el tránsito intestinal normal. Tratado con cirugía de
+                  descenso.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Paresia gástrica (gastroparesia)</div>
+                <div class="ddesc">
+                  Vaciamiento gástrico retardado. Requirió alimentación venosa
+                  (parenteral) entre 2018 y 2021.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">
+                  Bridas (adherencias) en cavidad torácica y abdominal
+                </div>
+                <div class="ddesc">
+                  Tejido cicatricial de cirugías previas; causa complicaciones
+                  intestinales y en ovario, además de obstrucciones recurrentes.
+                </div>
+              </div>
+            </div>
+
+            <div class="sys-group">
+              <div class="sys-name">Sistema urológico</div>
+              <div class="disease">
+                <div class="dname">Vejiga neurogénica</div>
+                <div class="ddesc">
+                  Disfunción del control nervioso de la vejiga; requiere manejo
+                  urológico (posible cateterismo).
+                </div>
+              </div>
+            </div>
+
+            <div class="sys-group">
+              <div class="sys-name">Sistema ginecológico</div>
+              <div class="disease">
+                <div class="dname">Endometriosis</div>
+                <div class="ddesc">
+                  Tejido similar al endometrio fuera del útero; causa dolor
+                  pélvico crónico.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Útero en retroversión</div>
+                <div class="ddesc">
+                  Variante anatómica en la que el útero se inclina hacia atrás.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Ovarios con quistes hemorrágicos</div>
+                <div class="ddesc">
+                  Quistes ováricos con sangrado interno; fuente de dolor pélvico
+                  agudo.
+                </div>
+              </div>
+            </div>
+
+            <div class="sys-group">
+              <div class="sys-name">Sistema hematológico</div>
+              <div class="disease">
+                <div class="dname">Anemia crónica por pérdida de hierro</div>
+                <div class="ddesc">
+                  Hemoglobina baja por pérdida crónica de hierro.
+                </div>
+                <span class="flag"
+                  >⚠️ NO administrar hierro sacaroso — reacción casi fatal (ver
+                  alergias)</span
+                >
+              </div>
+            </div>
+
+            <div class="sys-group">
+              <div class="sys-name">Antecedente oncológico</div>
+              <div class="disease">
+                <div class="dname">Primer tumor — resecado a los 11 años</div>
+                <div class="ddesc">
+                  Localización: cóccix + porción de intestino.
+                </div>
+              </div>
+              <div class="disease">
+                <div class="dname">Segundo tumor — resecado a los 18 años</div>
+                <div class="ddesc">
+                  Localización: desde la mitad del sacro hasta S3 + porción de
+                  intestino.
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- ===================== HISTORIAL QUIRÚRGICO ===================== -->
+      <section id="cirugias" aria-labelledby="t-cir">
+        <h2 class="sec-title" id="t-cir">
+          <span class="bar"></span>Historial quirúrgico
+        </h2>
+
+        <details class="acc">
+          <summary>
+            <span class="sum-txt"
+              >Ver historial quirúrgico (línea de tiempo)</span
+            >
+            <svg
+              class="chev"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </summary>
+          <div class="acc-body">
+            <div class="timeline">
+              <!-- EDITAR: ajusta fechas/edades donde corresponda -->
+              <div class="tl-item">
+                <div class="tl-when">Infancia</div>
+                <div class="tl-title">Cirugía de descenso por megacolon</div>
+                <div class="tl-desc">
+                  Con complicaciones que derivaron en 3 ostomías y 3 cierres de
+                  ostomía.
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-when">11 años</div>
+                <div class="tl-title">
+                  Resección del primer tumor (cóccix + intestino)
+                </div>
+                <div class="tl-desc">
+                  Complicación posterior: perforación intestinal → peritonitis,
+                  con cirugías asociadas.
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-when">18 años</div>
+                <div class="tl-title">Resección del segundo tumor</div>
+                <div class="tl-desc">
+                  Desde la mitad del sacro hasta S3 + porción de intestino.
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-when">2018 – 2021</div>
+                <div class="tl-title">
+                  Gastrostomía y posterior cierre de gastrostomía
+                </div>
+                <div class="tl-desc">
+                  Período de paresia gástrica con alimentación venosa
+                  (parenteral).
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-when">Episodios recurrentes</div>
+                <div class="tl-title">
+                  Más de 7 cirugías por obstrucción intestinal
+                </div>
+                <div class="tl-desc">
+                  Causadas por bridas (adherencias) abdominales.
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- ===================== CONTACTOS DE EMERGENCIA ===================== -->
+      <!-- EDITAR CONTACTOS:
+         1) Cambia el nombre y la relación.
+         2) Botón "Llamar":   reemplaza el número en  href="tel:+57XXXXXXXXXX"
+         3) Botón "WhatsApp": reemplaza el número en  href="https://wa.me/57XXXXXXXXXX"
+            (formato internacional SIN +, sin espacios ni guiones. Ej. Colombia: 573001234567)
+         Puedes duplicar o eliminar bloques <article class="contact"> según necesites.
+         Si un contacto tiene 2+ teléfonos: repite el par
+         <div class="c-phone">...</div> + <div class="c-actions">...</div> por cada número. -->
+      <section id="contactos" aria-labelledby="t-con">
+        <h2 class="sec-title" id="t-con">
+          <span class="bar"></span>Contactos de emergencia
+        </h2>
+
+        <div class="grid-2">
+          <article class="contact">
+            <div class="c-name">Santiago Giraldo Oliveros</div>
+            <div class="c-rel">Pareja</div>
+            <div class="c-phone">+57 304 587 7319</div>
+            <div class="c-actions">
+              <a class="btn-call" href="tel:+573045877319">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"
+                  />
+                </svg>
+                Llamar
+              </a>
+              <a
+                class="btn-wa"
+                href="https://wa.me/573045877319"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm5.3 14c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.6.8 2 .9 2.1.1.1.1.3 0 .5-.1.2-.2.4-.3.5l-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6-.1 1.1z"
+                  />
+                </svg>
+                WhatsApp
+              </a>
+            </div>
+          </article>
+
+          <article class="contact">
+            <div class="c-name">Claudia Patricia Perez Patiño</div>
+            <div class="c-rel">Mamá</div>
+            <div class="c-phone"><span class="tag">Tel. 1</span> +57 323 389 4620</div>
+            <div class="c-actions">
+              <a
+                class="btn-call"
+                href="tel:+573233894620"
+                aria-label="Llamar al Tel. 1 de mamá"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"
+                  />
+                </svg>
+                Llamar
+              </a>
+              <a
+                class="btn-wa"
+                href="https://wa.me/573233894620"
+                target="_blank"
+                rel="noopener"
+                aria-label="WhatsApp al Tel. 1 de mamá"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm5.3 14c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.6.8 2 .9 2.1.1.1.1.3 0 .5-.1.2-.2.4-.3.5l-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6-.1 1.1z"
+                  />
+                </svg>
+                WhatsApp
+              </a>
+            </div>
+            <div class="c-phone"><span class="tag">Tel. 2</span> +57 304 654 5849</div>
+            <div class="c-actions">
+              <a
+                class="btn-call"
+                href="tel:+573046545849"
+                aria-label="Llamar al Tel. 2 de mamá"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"
+                  />
+                </svg>
+                Llamar
+              </a>
+              <a
+                class="btn-wa"
+                href="https://wa.me/573046545849"
+                target="_blank"
+                rel="noopener"
+                aria-label="WhatsApp al Tel. 2 de mamá"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm5.3 14c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.6.8 2 .9 2.1.1.1.1.3 0 .5-.1.2-.2.4-.3.5l-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6-.1 1.1z"
+                  />
+                </svg>
+                WhatsApp
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== UTILIDADES ===================== -->
+      <div class="tools">
+        <button class="tool-btn" id="btnExpand" type="button">
+          Expandir todo
+        </button>
+        <button class="tool-btn" id="btnPrint" type="button">
+          Imprimir / PDF
+        </button>
+      </div>
+
+      <footer class="note">
+        Ficha médica de emergencia · Documento personal<br />
+        <!-- EDITAR: fecha de última actualización -->
+        <span class="upd">Última actualización: 2026</span>
+      </footer>
+    </main>
+
+    <!-- ===================== JS (mejora opcional; la página funciona sin él) ===================== -->
+    <script>
+      (function () {
+        var allDetails = Array.prototype.slice.call(
+          document.querySelectorAll('details.acc'),
+        );
+        var btnExpand = document.getElementById('btnExpand');
+        if (btnExpand) {
+          btnExpand.addEventListener('click', function () {
+            var anyClosed = allDetails.some(function (d) {
+              return !d.open;
+            });
+            allDetails.forEach(function (d) {
+              d.open = anyClosed;
+            });
+            btnExpand.textContent = anyClosed
+              ? 'Contraer todo'
+              : 'Expandir todo';
+          });
+        }
+        var btnPrint = document.getElementById('btnPrint');
+        if (btnPrint) {
+          btnPrint.addEventListener('click', function () {
+            allDetails.forEach(function (d) {
+              d.open = true;
+            });
+            window.print();
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
