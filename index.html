@@ -164,6 +164,38 @@
         line-height: 1;
       }
 
+      /* ===================== HOSPITAL DE REFERENCIA ===================== */
+      .hospital-bar {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-top: 20px;
+        background: #eef4fb;
+        border: 1px solid #cdddf2;
+        border-left: 6px solid var(--navy-2);
+        border-radius: var(--radius);
+        padding: 13px 16px;
+      }
+      .hospital-bar .ico {
+        font-size: 27px;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+      .hospital-bar .hb-label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--navy-2);
+      }
+      .hospital-bar .hb-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        line-height: 1.2;
+        margin-top: 1px;
+      }
+
       /* ===================== SECCIONES / TÍTULOS ===================== */
       main {
         padding-top: 22px;
@@ -658,6 +690,15 @@
     </div>
 
     <main class="wrap">
+      <!-- ===================== HOSPITAL DE REFERENCIA ===================== -->
+      <div class="hospital-bar">
+        <span class="ico" aria-hidden="true">🏥</span>
+        <div>
+          <div class="hb-label">Paciente frecuente</div>
+          <div class="hb-name">Hospital Pablo Tobón Uribe</div>
+        </div>
+      </div>
+
       <!-- ===================== ALERGIAS CRÍTICAS ===================== -->
       <!-- Ordenadas por gravedad: lo más mortal primero. -->
       <section id="alergias" aria-labelledby="t-alergias">
