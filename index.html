@@ -566,25 +566,36 @@
 
       /* ===================== IMPRESIÓN / PDF ===================== */
       @media print {
+        /* Forzar la impresión de fondos y colores (header azul, banner rojo,
+           badges y botones). Sin esto el navegador los omite y todo sale en blanco. */
+        *,
+        *::before,
+        *::after {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        @page {
+          margin: 12mm;
+        }
         :root {
           --bg: #fff;
         }
         body {
           padding: 0;
-          font-size: 12pt;
+          font-size: 11pt;
         }
         .alert-banner {
           position: static;
+          box-shadow: none;
         }
         .tools {
           display: none !important;
         }
-        details.acc {
-          box-shadow: none;
-          border: 1px solid #999;
-        }
         .chev {
           display: none;
+        }
+        details.acc {
+          box-shadow: none;
         }
         details.acc > summary {
           cursor: default;
@@ -597,12 +608,29 @@
         .badge.mortal {
           animation: none;
         }
-        section,
+        /* Mantener juntos los elementos pequeños (que no se partan entre páginas) */
         .allergy,
         .med,
-        details.acc,
-        .contact {
+        .contact,
+        .disease,
+        .tl-item {
           page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        /* No dejar un título solo al final de una página */
+        .sec-title,
+        .sys-name,
+        details.acc > summary {
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+        /* Dejar que las secciones grandes y los acordeones fluyan entre páginas
+           (evita páginas casi en blanco con solo el título) */
+        section,
+        details.acc,
+        .acc-body {
+          page-break-inside: auto;
+          break-inside: auto;
         }
       }
     </style>
@@ -1100,6 +1128,12 @@
         <button class="tool-btn" id="btnExpand" type="button">
           Expandir todo
         </button>
+        <!-- NOTA SOBRE IMPRESIÓN / PDF:
+             Los fondos de color (header azul, banner rojo, badges, botones) se
+             imprimen automáticamente gracias a "print-color-adjust: exact".
+             En el diálogo de impresión del navegador, DESACTIVA "Encabezados y
+             pies de página" para quitar la fecha, la ruta file:/// y el número
+             de página. (No hace falta tocar "Gráficos de fondo".) -->
         <button class="tool-btn" id="btnPrint" type="button">
           Imprimir / PDF
         </button>
